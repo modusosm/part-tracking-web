@@ -9,10 +9,10 @@
     .chartjs-wrapper2 {
       display: inline-block;
       width: 80%;
-      height: 200%;
+
     }
     #myChart {
-
+      height: 1500;
     }
   </style>
   <body>
@@ -35,7 +35,7 @@
           var qtyColor = [];
 
           jsonData.map(function(value) {
-            catalog.push(value.catalog_name);
+            catalog.push(value.catalog_name + ' - Step: ' + value.at_operation);
             qty.push(value.quantity);
             if (value.quantity <= 0) {
               qtyColor.push('rgb(255, 99, 132)');
@@ -62,7 +62,9 @@
                 },
 
                 // Configuration options go here
-                options: {}
+                options: {
+                  maintainAspectRatio: false,
+                }
             });
 
             var bars = chart.data.datasets[0].bars;
@@ -71,7 +73,6 @@
                var color="green";
                //You can check for bars[i].value and put your conditions here
                bars[i].fillColor = color;
-
             }
             chart.data.update(); //update the chart
         }
