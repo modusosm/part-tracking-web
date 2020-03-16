@@ -35,7 +35,7 @@
           var qtyColor = [];
 
           jsonData.map(function(value) {
-            if (value.at_operation == null) {
+            if (value.is_complete == true) {
               catalog.push(value.catalog_name);
               qty.push(value.quantity);
               if (value.quantity <= 0) {
