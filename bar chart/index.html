@@ -24,40 +24,29 @@
   </body>
 
   <script>
+    var chart;
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://data.modus.city/track2/inventory/');
     xhr.onload = function() {
         if (xhr.status === 200) {
           var jsonData = xhr.responseText;
           jsonData = JSON.parse(jsonData).data;
-          var catalog = [];
-          var qty = [];
-          var qtyColor = [];
 
-          jsonData.map(function(value) {
-            catalog.push(value.catalog_name + ' - Step: ' + value.at_operation);
-            qty.push(value.quantity);
-            if (value.quantity <= 0) {
-              qtyColor.push('rgb(255, 99, 132)');
-            }
-            else {
-              qtyColor.push('rgb(99, 255, 132)');
-            }
-          });
+          var formattedData = formatData(jsonData);
 
             var ctx = document.getElementById('myChart').getContext('2d');
-            var chart = new Chart(ctx, {
+            chart = new Chart(ctx, {
                 // The type of chart we want to create
                 type: 'horizontalBar',
 
                 // The data for our dataset
                 data: {
-                    labels: catalog,
+                    labels: formattedData.catalog,
                     datasets: [{
                         label: 'MODUS Inventory',
-                        backgroundColor: qtyColor,
-                        borderColor: qtyColor,
-                        data: qty
+                        backgroundColor: formattedData.qtyColor,
+                        borderColor: formattedData.qtyColor,
+                        data: formattedData.qty
                     }]
                 },
 
@@ -68,12 +57,12 @@
             });
 
             var bars = chart.data.datasets[0].bars;
-            console.log('bars', bars);
-            for(i=0;i<bars.length;i++){
+            for(var i=0;i<bars.length;i++){
                var color="green";
                //You can check for bars[i].value and put your conditions here
                bars[i].fillColor = color;
             }
+
             chart.data.update(); //update the chart
         }
         else {
@@ -81,6 +70,51 @@
         }
     };
     xhr.send();
+
+    function formatData(array) {
+      var catalog = [];
+      var qty = [];
+      var qtyColor = [];
+      array.map(function(value) {
+        catalog.push(value.catalog_name + ' - Step: ' + value.at_operation);
+        qty.push(value.quantity);
+        if (value.quantity <= 0) {
+          qtyColor.push('rgb(255, 99, 132)');
+        }
+        else {
+          qtyColor.push('rgb(99, 255, 132)');
+        }
+      });
+      return {'catalog':catalog, 'qty':qty, 'qtyColor':qtyColor}
+    }
+
+    /*setTimeout(function() {
+      addData();
+      console.log('updated');
+    }, 500);*/
+
+    setInterval('addData()',1000)
+
+    function addData() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://data.modus.city/track2/inventory/');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var jsonData = xhr.responseText;
+          jsonData = JSON.parse(jsonData).data;
+          var formattedData = formatData(jsonData);
+          chart.data.labels = formattedData.catalog;
+          chart.data.datasets[0].backgroundColor = formattedData.qtyColor;
+          chart.data.datasets[0].borderColor = formattedData.qtyColor;
+          chart.data.datasets[0].data = formattedData.qty;
+          chart.update();
+        }
+        else {
+          alert('Request failed.  Returned status of ' + xhr.status);
+        }
+      };
+      xhr.send();
+    }
 
   </script>
 </html>
