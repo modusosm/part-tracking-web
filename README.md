@@ -1,0 +1,3 @@
+I don't know what this repo will become.  I was playing with visualizing the `/inventory` endpoint.  Clearly it wants to eventually be part of a larger portal.  Maybe that happens here, or maybe this repo becomes a collection of widgets that can get absorbed into another more formal web portal repo.
+
+For now, here's this thing I made...

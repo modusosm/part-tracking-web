@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  </head>
+  <style>
+    .chartjs-wrapper {
+      text-align: center;
+    }
+    .chartjs-wrapper2 {
+      display: inline-block;
+      width: 80%;
+      height: 200%;
+    }
+    #myChart {
+
+    }
+  </style>
+  <body>
+    <div class="chartjs-wrapper">
+      <div class="chartjs-wrapper2">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://data.modus.city/track2/inventory/');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+          var jsonData = xhr.responseText;
+          jsonData = JSON.parse(jsonData).data;
+          var catalog = [];
+          var qty = [];
+          var qtyColor = [];
+
+          jsonData.map(function(value) {
+            catalog.push(value.catalog_name);
+            qty.push(value.quantity);
+            if (value.quantity <= 0) {
+              qtyColor.push('rgb(255, 99, 132)');
+            }
+            else {
+              qtyColor.push('rgb(99, 255, 132)');
+            }
+          });
+
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'horizontalBar',
+
+                // The data for our dataset
+                data: {
+                    labels: catalog,
+                    datasets: [{
+                        label: 'MODUS Inventory',
+                        backgroundColor: qtyColor,
+                        borderColor: qtyColor,
+                        data: qty
+                    }]
+                },
+
+                // Configuration options go here
+                options: {}
+            });
+
+            var bars = chart.data.datasets[0].bars;
+            console.log('bars', bars);
+            for(i=0;i<bars.length;i++){
+               var color="green";
+               //You can check for bars[i].value and put your conditions here
+               bars[i].fillColor = color;
+
+            }
+            chart.data.update(); //update the chart
+        }
+        else {
+            alert('Request failed.  Returned status of ' + xhr.status);
+        }
+    };
+    xhr.send();
+
+  </script>
+</html>
